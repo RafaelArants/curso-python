@@ -1,10 +1,28 @@
+#pip install customtkinter
 import customtkinter as ctk # alias - apelido
 
 def calcular():
-    num1 = float(entrada_num1.get())
-    num2 = float(entrada_num2.get())
-    op = operacao.get()
+    try:    
+        num1 = float(entrada_num1.get())
+        num2 = float(entrada_num2.get())
+        op = operacao.get()
+        print(num1, num2, op)
 
+        if op == "+":
+            resultado = num1+num2
+        elif op == "-":
+            resultado = num1-num2
+        elif op == "*":
+            resultado = num1*num2
+        elif op == "/":
+            if num2 > 0:
+                resultado = num1/num2
+        print(resultado)
+
+        label_resultado.configure(text=resultado) 
+    except:
+        label_resultado.configure(text="Houve um erro, tente novamente!")
+        
 app = ctk.CTk() # Tela Principal
 
 app.title("Calculadora CTK") # Titulo tela
@@ -29,8 +47,12 @@ operacao = ctk.CTkOptionMenu(app, values=["+","-","*","/"])
 operacao.set("+")
 operacao.pack(pady=5)
 
-botao_calcular = ctk.CTkButton(app, text="Calcular", command=calcular).pack()
+botao_calcular = ctk.CTkButton(app, text="Calcular", command=calcular).pack() #Da para colocar direto, mas pode acontecer dar erro.
 #botao_calcular.pack(pady=5)
+
+label_resultado = ctk.CTkLabel(app, text="")
+label_resultado.pack(pady=5)
+
 
 
 
