@@ -35,7 +35,7 @@
                         required>
                     <button type="submit" name="calc_imc" class="btn btn-primary w-100">Calcular IMC</button>
                 </form>
-                {% if context['imc_result'] %}
+                {% if context['imc_result']%}
                 <p class="mt-2">{{ context['imc_result'] }}</p>
                 {% endif %}
             </div>
@@ -132,7 +132,7 @@
             <div class="card-header bg-secondary text-white">Potência</div>
             <div class="card-body">
                 <form method="POST">
-                    <input type="number" name="base" class="form-control mb-2" placeholder="Valor Base" required>
+                    <input type="number" name="base" class="form-control mb-2" placeholder="Valor Base" required step="0.01">
                     <input type="number" name="expoente" class="form-control mb-2" placeholder="Valor Expoente"
                         required>
                     <button type="submit" name="calc_potencia" class="btn btn-primary w-100">Calcular</button>
