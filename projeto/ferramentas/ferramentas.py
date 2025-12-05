@@ -65,8 +65,9 @@ def calcCombustivel(etanol,gasolina):
     else:
         return f"Com base nos preços informados, será mais econômico abastecer com Gasolina!"
 
-#def calcTemp(temp,escala):
- #   if escala == celsius:
-  #      return f"A temperatura {temp}ºF convertido Celsius é {(temp - 32)/1.8}ºC"
-   # else:
-    #    return f"A temperatura {temp}ºC convertido é Fahrenheit {temp * 1.8 + 32}ºF"
+def calcTemp(temp,escala):
+    if escala == "celsius":
+        return f"A temperatura {temp}ºF convertido Celsius é {round((temp - 32)/1.8,2)}ºC"
+    else:
+        return f"A temperatura {temp}ºC convertido é Fahrenheit {round(temp * 1.8 + 32,2)}ºF"
+    

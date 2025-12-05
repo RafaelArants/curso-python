@@ -1,12 +1,41 @@
 import json, os
 from flask import Flask, render_template, request, redirect, url_for
 from ferramentas.ferramentas import * #Se colocar "*" ela importa tudo que estiver dentro
+from ferramentas.apis import *
+from datetime import datetime
+#pip install datetime
 
 app = Flask(__name__)
 
 @app.route('/')
 def home():
     return render_template('home.html')
+
+@app.route('/api', methods=['GET', 'POST'])
+def api():
+    context = {}
+
+    if request.method == "POST":
+        if "consulta_cep" in request.form:
+            cep = request.form["cep"]
+            context["api_cep"] = buscarEndereco(cep)
+        elif "consulta_moeda" in request.form:
+            selecao = request.form["moedas"]
+            resposta = cotacaoMoedas(selecao)
+            retorno = {}
+            if type(resposta) is dict:
+                moeda = request.form['moedas'].replace("-", "")
+                moeda_dados = resposta[moeda]
+                retorno['nome'] = moeda_dados['name']
+                retorno['compra'] = formatar_reais(moeda_dados['bid'])
+                retorno['venda'] = formatar_reais(moeda_dados['ask'])
+                retorno['data'] = datetime.strptime(moeda_dados['create_date'], '%Y-%m-%d %H:%M:%S').strftime('%d/%m/%Y %H:%M:%S')
+            else:
+                retorno['mensagem'] = "Erro ao consultar"
+            context["api_moedas"] = retorno
+
+
+    return render_template('api.html', context=context)
 
 @app.route('/calculadora', methods=['GET', 'POST'])
 def calculadora():
@@ -43,10 +72,10 @@ def ferramentas():
             etanol = float(request.form["etanol"])
             gasolina = float(request.form["gasolina"])
             context["combustivel_result"] = calcCombustivel(etanol,gasolina)
-        #elif "convert_temp" in request.form:
-         #   temp = float(request.form["temp"])
-          #  escala = request.form["escala"]
-           # context["temp_result"] = calcTemp(temp,escala)
+        elif "convert_temp" in request.form:
+            temp = float(request.form["temp"])
+            escala = request.form["escala"]
+            context["temp_result"] = calcTemp(temp,escala)
 
     return render_template('ferramentas.html', context=context)
     
