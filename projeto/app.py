@@ -7,9 +7,76 @@ from datetime import datetime
 
 app = Flask(__name__)
 
+users = {}
+
 @app.route('/')
 def home():
     return render_template('home.html')
+
+@app.route('/usuarios')
+def usuarios():
+    return render_template('usuarios.html', users=users)
+
+def recuperaInfo():
+    dados = {}
+    if request != None:
+        dados = {
+            'nome': request.form.get('nome', '').strip(),
+            'sobrenome': request.form.get('sobrenome', '').strip(),
+            'email': request.form.get('email', '').strip(),
+            'data_nascimento': request.form.get('data_nascimento', '').strip(),
+            'cep': request.form.get('cep', '').strip(),
+            'endereco': request.form.get('endereco', '').strip(),
+            'numero': request.form.get('numero', '').strip(),
+            'complemento': request.form.get('complemento', '').strip(),
+            'bairro': request.form.get('bairro', '').strip(),
+            'cidade': request.form.get('cidade', '').strip(),
+            'estado': request.form.get('estado', '').strip()            
+        }
+    return dados
+
+@app.route('/gerenciar_usuario', methods=['GET', 'POST'])
+def gerenciar_usuario():
+
+    user_id = request.args.get('user_id', type=int)
+
+    if user_id is not None and user_id not in users:
+        return redirect(url_for('usuarios'))
+    
+    user = users.get(user_id)
+
+    if request.method == "POST":
+        dados_usuario = recuperaInfo()
+
+        if "buscar_cep" in request.form:
+            if user is None:
+                user = dados_usuario
+            retorno = buscarEndereco(request.form['cep'])
+            if retorno:
+                user.update({
+                    'endereco': retorno.get('logradouro', '').strip(),
+                    'bairro': retorno.get('bairro', '').strip(),
+                    'complemento': retorno.get('complemento', '').strip(),
+                    'estado': retorno.get('estado', '').strip(),
+                    'cidade': retorno.get('localidade', '').strip(),
+                    'cep': retorno.get('cep', '').strip()
+                })
+            return render_template('gerenciar_usuario.html', user=user, user_id=user_id)
+
+        #Editar
+        if user_id is not None and user_id in users:
+            users[user_id] = dados_usuario
+        else: #Inserir
+            id = max(users.keys(), default=0) + 1
+            users[id] = dados_usuario
+
+        return redirect(url_for('usuarios'))
+
+    return render_template('gerenciar_usuario.html', user = user, user_id = user_id)
+
+@app.route('/excluir_usuario/<int:user_id>')
+def excluir_usuario(user_id):
+    return redirect(url_for('usuarios'))
 
 @app.route('/api', methods=['GET', 'POST'])
 def api():
