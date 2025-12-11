@@ -2,12 +2,13 @@ import json, os
 from flask import Flask, render_template, request, redirect, url_for
 from ferramentas.ferramentas import * #Se colocar "*" ela importa tudo que estiver dentro
 from ferramentas.apis import *
+from ferramentas.arquivoJson import *
 from datetime import datetime
 #pip install datetime
 
 app = Flask(__name__)
 
-users = {}
+users = carregarDicionarioJson()
 
 @app.route('/')
 def home():
@@ -69,13 +70,15 @@ def gerenciar_usuario():
         else: #Inserir
             id = max(users.keys(), default=0) + 1
             users[id] = dados_usuario
-
+        salvarDicionarioJson(users)
         return redirect(url_for('usuarios'))
 
     return render_template('gerenciar_usuario.html', user = user, user_id = user_id)
 
 @app.route('/excluir_usuario/<int:user_id>')
 def excluir_usuario(user_id):
+    users.pop(user_id, None)
+    salvarDicionarioJson(users)
     return redirect(url_for('usuarios'))
 
 @app.route('/api', methods=['GET', 'POST'])
